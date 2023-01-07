@@ -29,6 +29,13 @@
             {
               "client_id": "773530219840-qvho1u9c1rgse4k5qpce4rb9tcm8koln.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "773530219840-mrbfjb3aaki8kvbv45g7m8bc9vf8n0mq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.sinut.simpleFlutterFirebaseCrud"
+              }
             }
           ]
         }
