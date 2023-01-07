@@ -29,6 +29,12 @@ class _CreateScreenState extends State<CreateScreen> {
 
   late User _user;
 
+  @override
+  void initState() {
+    super.initState();
+    _ageCrt.text = "18";
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
         context: context,
@@ -55,6 +61,7 @@ class _CreateScreenState extends State<CreateScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+
             /// Username
             ///
             TextField(
@@ -167,6 +174,12 @@ class _CreateScreenState extends State<CreateScreen> {
                     builder: (context, snapshot) {
                       print("loading");
                       if (snapshot.hasData) {
+                        if (snapshot.data == false) {
+                          return const Text(
+                            'Failed!',
+                            style: TextStyle(color: Colors.red),
+                          );
+                        }
                         return const Text(
                           'Created!',
                           style: TextStyle(color: Colors.green),
@@ -182,19 +195,17 @@ class _CreateScreenState extends State<CreateScreen> {
                 ElevatedButton(
                   onPressed: () {
                     setState(() {
-                      _user = User(
+                      _user = User.create(
                         username: _usernameCrt.text,
                         password: _passwordCrt.text,
                         age: int.parse(_ageCrt.text),
                         dob: _dobCrt,
-                        validated: false,
                         address: Address(
                             postal: _postalCrt.text,
                             street: _streetCrt.text,
                             province: _provinceCrt.text),
                       );
                       _pressedCreate = true;
-                      print("pressed");
                     });
                   },
                   child: Text("Create"),
@@ -209,8 +220,25 @@ class _CreateScreenState extends State<CreateScreen> {
 
   Future<bool> _createUser(User user) async {
     final db = FirebaseFirestore.instance;
-    await db.collection(Collection.users).add(user.toJson());
-    await Future.delayed(const Duration(milliseconds: 1000));
+    // await db.collection(Collection.users).add(user.toJson());
+
+    try {
+      await db
+          .collection(Collection.users)
+          .withConverter(
+        fromFirestore: User.fromFirestore,
+        toFirestore: (value, options) {
+          return user.toFirestore();
+        },
+      )
+          .doc(user.id)
+          .set(user);
+    } catch (e) {
+      print(e.toString());
+      return false;
+    } finally {
+      await Future.delayed(const Duration(milliseconds: 1000));
+    }
     return true;
   }
 }
