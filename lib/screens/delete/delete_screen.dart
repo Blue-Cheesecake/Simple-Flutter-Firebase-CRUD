@@ -27,9 +27,7 @@ class _DeleteScreenState extends State<DeleteScreen> {
     return result;
   }
 
-  @override
-  void initState() {
-    super.initState();
+  void _performLoadingData() {
     _isLoading = true;
     _fetchData().then((value) {
       _userIds = value;
@@ -41,6 +39,12 @@ class _DeleteScreenState extends State<DeleteScreen> {
         });
       });
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _performLoadingData();
   }
 
   @override
@@ -72,9 +76,55 @@ class _DeleteScreenState extends State<DeleteScreen> {
       title: Text(user.username),
       subtitle: Text("Validated: ${user.validated}"),
       trailing: IconButton(
-        onPressed: () {},
+        onPressed: () => _showAlertDialog(context, user.id),
         icon: const Icon(Icons.delete),
       ),
+    );
+  }
+
+  Future<bool> _deleteUser(String userID) async {
+    try {
+      final db = FirebaseFirestore.instance;
+      await db.collection(Collection.users).doc(userID).delete();
+    } catch (e) {
+      print(e);
+      return false;
+    }
+    return true;
+  }
+
+  void _showAlertDialog(BuildContext context, String userID) {
+    // set up the buttons
+    Widget cancelButton = TextButton(
+      child: Text("Cancel"),
+      onPressed: () => Navigator.of(context).pop(),
+    );
+    Widget continueButton = TextButton(
+      child: Text("Continue"),
+      onPressed: () {
+        // Perform delete here
+
+        _deleteUser(userID).then((value) {
+          Navigator.of(context).pop();
+          setState(() {
+            _performLoadingData();
+          });
+        });
+      },
+    );
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text("Are you sure you want to delete this user?"),
+          content: Text("Performs this action can't be reversed."),
+          actions: [
+            cancelButton,
+            continueButton,
+          ],
+        );
+      },
     );
   }
 }
