@@ -4,6 +4,7 @@ import 'package:simple_flutter_firebase_crud/screens/create/create_screen.dart';
 import 'package:simple_flutter_firebase_crud/screens/delete/delete_screen.dart';
 import 'package:simple_flutter_firebase_crud/screens/home/home.dart';
 import 'package:simple_flutter_firebase_crud/screens/read/read_screen.dart';
+import 'package:simple_flutter_firebase_crud/screens/update/edit_screen.dart';
 import 'package:simple_flutter_firebase_crud/screens/update/update_screen.dart';
 
 import 'firebase_options.dart';
@@ -29,6 +30,7 @@ class Main extends StatelessWidget {
         CreateScreen.routeName: (context) => CreateScreen(),
         ReadScreen.routeName: (context) => ReadScreen(),
         UpdateScreen.routeName: (context) => UpdateScreen(),
+        EditScreen.routeName: (context) => EditScreen(),
         DeleteScreen.routeName: (context) => DeleteScreen(),
       },
     );
